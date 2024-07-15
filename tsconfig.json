@@ -23,7 +23,6 @@
     "paths": {
       "@util/*": ["src/util/*"],
       "@model/*": ["src/model/*"],
-      "@test/*": ["test/*"],
       "@controller/*": ["src/controller/*"],
       "@interface/*": ["src/interface/*"],
       "@service/*": ["src/service/*"]
