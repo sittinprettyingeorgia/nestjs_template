@@ -1,0 +1,77 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description:
+  This template should be used for the construction of containerized nextjs applications.
+# CloudFormation does not transform, modify, or redact any information you include in the Metadata section.
+# Because of this, we strongly recommend you do not use this section to store sensitive information, such as passwords or secrets.
+Metadata:
+  Instances:
+    Description: "Information about the instances"
+  Databases:
+    Description: "Information about the databases"
+
+Parameters:
+  ApplicationName:
+    Type: String
+    Description: "blake_software"
+  EnvironmentName:
+    Type: String
+    Description: "blake_software_env"
+  BucketName:
+    Type: String
+    Description: "S3 bucket containing nextjs application"
+
+# rules section cannot be checked by cloudformation plugin. This must be verified manually
+Rules:
+  Rule01:
+    RuleCondition:
+      rule-specific intrinsic function: Value01
+    Assertions:
+      - Assert:
+          rule-specific intrinsic function: Value02
+        AssertDescription: Information about this assert
+      - Assert:
+          rule-specific intrinsic function: Value03
+        AssertDescription: Information about this assert
+  Rule02:
+    Assertions:
+      - Assert:
+          rule-specific intrinsic function: Value04
+        AssertDescription: Information about this assert
+
+Resources:
+  NextJsApplication:
+    Type: AWS::ElasticBeanstalk::Application # AWS::ProductIdentifier::ResourceType
+    Properties:
+      ApplicationName: !Ref ApplicationName
+
+  NextJsEnvironment:
+    Type: AWS::ElasticBeanstalk::Environment
+    Properties:
+      ApplicationName: !Ref NextJsApplication
+      EnvironmentName: !Ref EnvironmentName
+      SolutionStackName: "64bit Amazon Linux 2 v4.4.1 running Node.js"
+      OptionSettings:
+        - Namespace: aws:elasticbeanstalk:container:nodejs
+          OptionName: NodeCommand
+          Value: "npm start"
+        - Namespace: aws:elasticbeanstalk:container:nodejs
+          OptionName: ProxyServer
+          Value: "nginx"
+        - Namespace: aws:elasticbeanstalk:container:nodejs
+          OptionName: ProxyServerPort
+          Value: "8081"
+  NextJsApplicationVersion:
+    Type: AWS::ElasticBeanstalk::ApplicationVersion
+    Properties:
+      ApplicationName: !Ref NextJsApplication
+      Description: "testing cloudformation and nextjs"
+      SourceBundle:
+        S3Bucket: !Ref BucketName
+        S3Key: "needsomezipfile.zip"# update with actual s3 key
+
+Outputs:
+  NextJsEndpoint:
+    Description: " url of the deployed nextjs application"
+    Value: !GetAtt NextJsEnvironment.EndpointURL
