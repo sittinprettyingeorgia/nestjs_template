@@ -45,13 +45,16 @@ class Base extends BaseEntity implements IBase {
     });
   }
 
-  private throwErr() {
-    throw new Error(`Access Denied.\n\n.${this.toString()}`);
+  private throwErr(requestor: IBase) {
+    throw new Error(`Access Denied.\n\n.
+      requested: ${this.toString()}\n\n
+      requestor: ${requestor.toString()}
+      `);
   }
 
   private isAccessibleBy(requestor: IBase) {
     if (!requestor?.accessLevel && this.accessLevel) {
-      this.throwErr();
+      this.throwErr(requestor);
     }
 
     const hasLevel3AccessLevel: boolean = requestor.accessLevel === LEVEL3;
@@ -78,7 +81,8 @@ class Base extends BaseEntity implements IBase {
     }
 
     if (!hasAccessLevel) {
-      this.throwErr();
+      console.log('has no access level');
+      this.throwErr(requestor);
     }
   }
 
@@ -94,7 +98,7 @@ class Base extends BaseEntity implements IBase {
     const hasCreateAccess: boolean = requestor.access === CREATE;
     const hasAccess: boolean = !this.access || this.access === requestor.access;
     if (!hasAccess) {
-      this.throwErr();
+      this.throwErr(requestor);
     }
 
     let result = { data: this };
@@ -105,15 +109,18 @@ class Base extends BaseEntity implements IBase {
           this.removeSensitiveProperties(requestor, this);
           result.data = this;
         }
+        break;
       case UPDATE:
         if (hasUpdateAccess || hasCompleteCRUDAccess) {
           this.removeSensitiveProperties(requestor, this);
           result = Object.seal({ data: this });
         }
+        break;
       case CREATE:
         if (!(hasUpdateAccess || hasCompleteCRUDAccess || hasCreateAccess)) {
-          this.throwErr();
+          this.throwErr(requestor);
         }
+        break;
       case READ:
         if (
           !(
@@ -126,8 +133,9 @@ class Base extends BaseEntity implements IBase {
           this.removeSensitiveProperties(requestor, this);
           return Object.freeze({ data: this });
         }
+        break;
       default:
-        this.throwErr();
+        this.throwErr(requestor);
     }
   }
 

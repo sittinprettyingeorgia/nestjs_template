@@ -15,7 +15,7 @@ class BaseController extends Base implements CrudController<Base> {
     protected readonly auth: AuthService,
   ) {
     // default access and accessLevel
-    super('read', 'private');
+    super('read', 'public');
   }
 
   private get base(): CrudController<Base> {
