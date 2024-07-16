@@ -25,7 +25,8 @@
       "@model/*": ["src/model/*"],
       "@controller/*": ["src/controller/*"],
       "@interface/*": ["src/interface/*"],
-      "@service/*": ["src/service/*"]
+      "@service/*": ["src/service/*"],
+      "@dao/*": ["src/dao/*"]
     },
     "esModuleInterop": true,
     "module": "esnext",

@@ -39,7 +39,7 @@ class BaseController extends Base implements CrudController<Base> {
   }
 
   @Override()
-  getOneBase(req: CrudRequest): Promise<Base> {
+  getOne(req: CrudRequest): Promise<Base> {
     const user: Base = this.auth.getAuthUser();
     this.willAllowAccessTo(user, 'read');
     const method = this.ensureDefined(this.base.getOneBase);
@@ -47,7 +47,7 @@ class BaseController extends Base implements CrudController<Base> {
   }
 
   @Override()
-  createOneBase(req: CrudRequest, dto: Base): Promise<Base> {
+  createOne(req: CrudRequest, dto: Base): Promise<Base> {
     const user: Base = this.auth.getAuthUser();
     dto.willAllowAccessTo(user, 'create');
     const method = this.ensureDefined(this.base.createOneBase);
@@ -55,7 +55,7 @@ class BaseController extends Base implements CrudController<Base> {
   }
 
   @Override()
-  createManyBase(req: CrudRequest, dto: CreateManyDto<Base>): Promise<Base[]> {
+  createMany(req: CrudRequest, dto: CreateManyDto<Base>): Promise<Base[]> {
     const user: Base = this.auth.getAuthUser();
     dto.bulk[0].willAllowAccessTo(user, 'create');
     const method = this.ensureDefined(this.base.createManyBase);
@@ -63,7 +63,7 @@ class BaseController extends Base implements CrudController<Base> {
   }
 
   @Override()
-  updateOneBase(req: CrudRequest, dto: Base): Promise<Base> {
+  updateOne(req: CrudRequest, dto: Base): Promise<Base> {
     const user: Base = this.auth.getAuthUser();
     dto.willAllowAccessTo(user, 'update');
     const method = this.ensureDefined(this.base.updateOneBase);
@@ -71,7 +71,7 @@ class BaseController extends Base implements CrudController<Base> {
   }
 
   @Override()
-  replaceOneBase(req: CrudRequest, dto: Base): Promise<Base> {
+  replaceOne(req: CrudRequest, dto: Base): Promise<Base> {
     const user: Base = this.auth.getAuthUser();
     dto.willAllowAccessTo(user, 'write');
     const method = this.ensureDefined(this.base.replaceOneBase);
@@ -79,7 +79,7 @@ class BaseController extends Base implements CrudController<Base> {
   }
 
   @Override()
-  deleteOneBase(req: CrudRequest): Promise<void | Base> {
+  deleteOne(req: CrudRequest): Promise<void | Base> {
     const user: Base = this.auth.getAuthUser();
     this.willAllowAccessTo(user, 'write');
     const method = this.ensureDefined(this.base.deleteOneBase);
@@ -87,7 +87,7 @@ class BaseController extends Base implements CrudController<Base> {
   }
 
   @Override()
-  recoverOneBase(req: CrudRequest): Promise<void | Base> {
+  recoverOne(req: CrudRequest): Promise<void | Base> {
     const user: Base = this.auth.getAuthUser();
     this.willAllowAccessTo(user, 'write');
     const method = this.ensureDefined(this.base.recoverOneBase);

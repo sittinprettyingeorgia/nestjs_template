@@ -80,7 +80,12 @@
       "/dist/"
     ],
     "moduleNameMapper": {
-      "^@src/(.*)$": "<rootDir>/src/$1"
+      "^@util/(.*)$": "<rootDir>/src/util/$1",
+      "^@model/(.*)$": "<rootDir>/src/model/$1",
+      "^@controller/(.*)$": "<rootDir>/src/controller/$1",
+      "^@interface/(.*)$": "<rootDir>/src/interface/$1",
+      "^@service/(.*)$": "<rootDir>/src/service/$1",
+      "^@dao/(.*)$": "<rootDir>/src/dao/$1"
     }
   }
 }
