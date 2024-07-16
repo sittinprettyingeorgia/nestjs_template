@@ -1,15 +1,6 @@
 import IBase, { Access, AccessLevel } from '@interface/base';
 import { BaseEntity } from 'typeorm';
 
-const LEVEL1 = 'private';
-const LEVEL2 = 'secret';
-const LEVEL3 = 'critical';
-
-const READ = 'read';
-const WRITE = 'write';
-const UPDATE = 'update';
-const CREATE = 'create';
-
 class Base extends BaseEntity implements IBase {
   access: Access;
   accessLevel: AccessLevel;
@@ -52,110 +43,33 @@ class Base extends BaseEntity implements IBase {
       `);
   }
 
-  private isAccessibleBy(requestor: IBase) {
-    if (!requestor?.accessLevel && this.accessLevel) {
-      this.throwErr(requestor);
-    }
+  private isAccessibleBy(requestor: IBase): void {
+    const accessLevels = ['public', 'private', 'secret', 'critical'];
 
-    const hasLevel3AccessLevel: boolean = requestor.accessLevel === LEVEL3;
-    const hasLevel2AccessLevel: boolean = requestor.accessLevel === LEVEL2;
-    const hasLevel1AccessLevel: boolean = requestor.accessLevel === LEVEL1;
-    let hasAccessLevel: boolean =
-      this.accessLevel === 'public' || !this.accessLevel;
+    const baseIndex = accessLevels.indexOf(this.accessLevel);
+    const requestorIndex = accessLevels.indexOf(requestor.accessLevel);
 
-    if (hasAccessLevel) {
-      return;
-    }
-
-    switch (this.accessLevel) {
-      case LEVEL3:
-        hasAccessLevel = hasLevel3AccessLevel;
-        break;
-      case LEVEL2:
-        hasAccessLevel = hasLevel3AccessLevel || hasLevel2AccessLevel;
-        break;
-      case LEVEL1:
-        hasAccessLevel =
-          hasLevel3AccessLevel || hasLevel2AccessLevel || hasLevel1AccessLevel;
-        break;
-    }
-
-    if (!hasAccessLevel) {
-      console.log('has no access level');
+    if (requestorIndex < baseIndex) {
       this.throwErr(requestor);
     }
   }
 
-  willAllowAccessTo(
-    requestor: IBase,
-    accessType: Access,
-  ): { data: Base } | void {
+  willAllowAccessTo(requestor: IBase): { data: Base } | void {
     this.isAccessibleBy(requestor);
 
-    const hasCompleteCRUDAccess: boolean = requestor.access === WRITE;
-    const hasReadAccess: boolean = requestor.access === READ;
-    const hasUpdateAccess: boolean = requestor.access === UPDATE;
-    const hasCreateAccess: boolean = requestor.access === CREATE;
-    const hasAccess: boolean = !this.access || this.access === requestor.access;
-    if (!hasAccess) {
-      this.throwErr(requestor);
-    }
-
-    let result = { data: this };
-
-    switch (accessType) {
-      case WRITE:
-        if (hasCompleteCRUDAccess) {
-          this.removeSensitiveProperties(requestor, this);
-          result.data = this;
-        }
-        break;
-      case UPDATE:
-        if (hasUpdateAccess || hasCompleteCRUDAccess) {
-          this.removeSensitiveProperties(requestor, this);
-          result = Object.seal({ data: this });
-        }
-        break;
-      case CREATE:
-        if (!(hasUpdateAccess || hasCompleteCRUDAccess || hasCreateAccess)) {
-          this.throwErr(requestor);
-        }
-        break;
-      case READ:
-        if (
-          !(
-            hasUpdateAccess ||
-            hasCompleteCRUDAccess ||
-            hasCreateAccess ||
-            hasReadAccess
-          )
-        ) {
-          this.removeSensitiveProperties(requestor, this);
-          return Object.freeze({ data: this });
-        }
-        break;
-      default:
-        this.throwErr(requestor);
-    }
+    this.removeSensitiveProperties(requestor, this);
+    return { data: { ...this } };
   }
 
-  /**
-  TODO: we need to verify this ai generated code works. 
-  */
   private removeSensitiveProperties(requestor: IBase, dirtyObj: IBase): void {
     for (const [key, property] of Object.entries(dirtyObj)) {
-      try {
-        // Check access for the property
-        this.willAllowAccessTo(requestor, dirtyObj.access);
-      } catch (error) {
-        // If access is denied, delete the property
-        dirtyObj = { ...dirtyObj, [key]: null };
-        continue;
-      }
-
-      // If the property is an object, recursively check its properties
-      if (typeof property === 'object' && property !== null) {
-        this.removeSensitiveProperties(requestor, property);
+      if (property instanceof Base) {
+        try {
+          property.willAllowAccessTo(requestor);
+        } catch (e) {
+          console.log('no errors');
+          dirtyObj[key] = null;
+        }
       }
     }
   }

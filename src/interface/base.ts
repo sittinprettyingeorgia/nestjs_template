@@ -10,11 +10,7 @@ export interface IBase {
   updatedOn: number;
   createdBy: number;
   createdOn: number;
-  willAllowAccessTo: (
-    requestor: IBase,
-    accessType: Access,
-    model?: IBase,
-  ) => void;
+  willAllowAccessTo: (requestor: IBase, model?: IBase) => void;
 }
 
 export default IBase;
