@@ -122,28 +122,15 @@ describe('Base', () => {
       );
     });
 
-    // it('should not modify non-Base properties', () => {
-    //   baseObject['stringField'] = 'Hello';
-    //   baseObject['numberField'] = 42;
+    it('should not modify non-Base properties', () => {
+      baseObject['stringField'] = 'Hello';
+      baseObject['numberField'] = 42;
 
-    //   const result = baseObject.willAllowAccessTo(requestor);
+      const result = baseObject.willAllowAccessTo(requestor);
 
-    //   expect(result).toBeDefined();
-    //   expect(result.data['stringField']).toBe('Hello');
-    //   expect(result.data['numberField']).toBe(42);
-    // });
-
-    // it('should handle properties with same access level but different access type', () => {
-    //   const writeProperty = new Base(
-    //     'write' as Access,
-    //     'private' as AccessLevel,
-    //   );
-    //   baseObject['writeField'] = writeProperty;
-
-    //   const result = baseObject.willAllowAccessTo(requestor);
-
-    //   expect(result).toBeDefined();
-    //   expect(result.data['writeField']).toBeNull();
-    // });
+      expect(result).toBeDefined();
+      expect(result?.data?.['stringField']).toBe('Hello');
+      expect(result?.data?.['numberField']).toBe(42);
+    });
   });
 });
