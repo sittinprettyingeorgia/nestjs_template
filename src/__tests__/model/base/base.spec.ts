@@ -100,7 +100,7 @@ describe('Base', () => {
       const nestedBase = new Base('read' as Access, 'private' as AccessLevel);
       nestedBase['nestedField'] = new Base(
         'write' as Access,
-        'private' as AccessLevel,
+        'critical' as AccessLevel,
       );
       baseObject['nestedObject'] = nestedBase;
 

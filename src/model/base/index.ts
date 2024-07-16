@@ -67,7 +67,6 @@ class Base extends BaseEntity implements IBase {
         try {
           property.willAllowAccessTo(requestor);
         } catch (e) {
-          console.log('no errors');
           dirtyObj[key] = null;
         }
       }
